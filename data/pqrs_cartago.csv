@@ -1,0 +1,13 @@
+tipo,radicados,tiempo_respuesta_dias,dependencia
+Petición,45,5,Planeación
+Queja,30,8,Obras Públicas
+Reclamo,25,10,Hacienda
+Sugerencia,15,3,Planeación
+Petición,50,6,Planeación
+Queja,35,9,Obras Públicas
+Reclamo,28,11,Hacienda
+Sugerencia,18,4,Planeación
+Petición,48,5,Planeación
+Queja,32,7,Obras Públicas
+Reclamo,26,10,Hacienda
+Sugerencia,16,3,Planeación
