@@ -1,0 +1,13 @@
+tipo,radicados,tiempo_respuesta_dias,dependencia,carga_dependencia,demora_alta,riesgo_demora
+Petición,45,5,Planeación,192,0,bajo
+Queja,30,8,Obras Públicas,97,1,medio
+Reclamo,25,10,Hacienda,79,1,alto
+Sugerencia,15,3,Planeación,192,0,bajo
+Petición,50,6,Planeación,192,0,medio
+Queja,35,9,Obras Públicas,97,1,alto
+Reclamo,28,11,Hacienda,79,1,alto
+Sugerencia,18,4,Planeación,192,0,bajo
+Petición,48,5,Planeación,192,0,bajo
+Queja,32,7,Obras Públicas,97,1,medio
+Reclamo,26,10,Hacienda,79,1,alto
+Sugerencia,16,3,Planeación,192,0,bajo
