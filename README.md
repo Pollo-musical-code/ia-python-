@@ -17,7 +17,9 @@ ia-python/
 │   ├── analisis_proyecto.py     # Clase 3: lee el CSV (csv.DictReader) y genera informe_proyecto.md
 │   ├── eda_proyecto.py          # Clase 4: EDA con NumPy + Matplotlib
 │   ├── preparacion_pqrs.py      # Clase 7 y Avance 2: Pandas + Seaborn + preparación para ML
-│   ├── neurona_pqrs.py          # Clase 8: neurona artificial para riesgo de demora
+│   ├── neurona_and.py           # Clase 8: neurona para la compuerta AND
+│   ├── neuronas_logicas.py      # Clase 8 (actividad independiente): compuertas OR, NOT, AND y XOR
+│   ├── neurona_pqrs.py          # Clase 8 aplicada: neurona para riesgo de demora
 │   └── perceptron_proyecto.py   # Clase 9 y Avance 2: perceptrón desde cero con NumPy
 ├── data/
 │   ├── pqrs_cartago.csv                 # Dataset original (12 registros)
@@ -26,6 +28,7 @@ ia-python/
 │   ├── informe_proyecto.md              # Generado por analisis_proyecto.py
 │   ├── eda_*.png                        # Generados por eda_proyecto.py
 │   ├── sns_*.png                        # Generados por preparacion_pqrs.py (5 gráficos)
+│   ├── evolucion_error.png              # Generado por neurona_and.py
 │   ├── neurona_pqrs_error.png           # Generado por neurona_pqrs.py
 │   ├── curva_aprendizaje_proyecto.png   # Generado por perceptron_proyecto.py
 │   └── frontera_decision_proyecto.png   # Generado por perceptron_proyecto.py
@@ -51,6 +54,8 @@ cd /app/src
 python analisis_proyecto.py
 python eda_proyecto.py
 python preparacion_pqrs.py
+(cd ../data && python ../src/neurona_and.py)   # el gráfico se guarda en data/
+python neuronas_logicas.py
 python neurona_pqrs.py
 python perceptron_proyecto.py
 
@@ -64,6 +69,7 @@ docker compose down
 ```bash
 cd ~/ia-python
 python3 src/preparacion_pqrs.py
+python3 src/neuronas_logicas.py
 python3 src/perceptron_proyecto.py
 ```
 
@@ -108,7 +114,56 @@ Script: `src/preparacion_pqrs.py` (Pandas + Seaborn).
    `tiempo_respuesta_dias`, por lo que un clasificador no debe usar el tiempo
    como entrada.
 
-## Clase 8: neurona para predecir riesgo de demora
+## Clase 8: neuronas artificiales para las compuertas lógicas
+
+Scripts: `src/neurona_and.py` (actividad en clase, compuerta AND) y
+`src/neuronas_logicas.py` (actividad independiente: compuertas OR y NOT, con AND y
+XOR para comparar). Todo en Python puro, con parámetros iniciales w = 0.1 y
+b = 0.0, tasa de aprendizaje 0.1 y función de activación escalón.
+
+### ¿Cuántas épocas necesitó cada compuerta para aprender?
+
+| Compuerta | Épocas | Error total por época |
+|---|---|---|
+| OR | 2 | 1, 0 |
+| NOT | 4 | 1, 2, 1, 0 |
+| AND | 3 | 3, 3, 0 |
+| XOR | No aprendió | Entre 2 y 4 durante 100 épocas |
+
+La última época de cada compuerta es la que confirma que el error ya es 0.
+Parámetros finales: OR w = [0.1, 0.1] y b = -0.1; NOT w = [-0.1] y b = 0;
+AND w = [0.2, 0.1] y b = -0.2. La evolución del error de AND está en
+`data/evolucion_error.png`.
+
+### ¿Fue necesario ajustar la tasa de aprendizaje? ¿Por qué?
+
+No: con 0.1 las tres compuertas aprendieron. Se probaron otras tasas con AND:
+con 0.001 necesitó 34 épocas, con 0.1 necesitó 3 y con 1.0 necesitó 6. Con OR,
+0.001 y 0.1 necesitaron 2 épocas y 1.0 necesitó 4. Una tasa muy baja hace
+los ajustes diminutos y el aprendizaje lento; una tasa alta no desestabiliza la
+neurona porque con la función escalón la salida solo puede ser 0 o 1, pero sí
+da pasos más grandes de lo necesario y tarda más que con 0.1.
+
+### ¿Qué diferencias encontré entre AND y OR?
+
+OR es más fácil de aprender: necesitó 2 épocas contra 3 de AND, y su error
+total inicial fue 1 contra 3 de AND. En AND la neurona solo debe activarse
+cuando las dos entradas valen 1, y por eso terminó con pesos mayores
+(w = [0.2, 0.1]) y un bias más negativo (-0.2 contra -0.1 en OR). En OR basta
+con que una entrada valga 1, así que el umbral es más fácil de alcanzar.
+
+### ¿Por qué XOR no puede ser aprendida por una sola neurona?
+
+Una sola neurona con función escalón separa las clases con una línea recta. En
+AND y OR se puede trazar una recta que deje los 1 de un lado y los 0 del otro.
+En XOR, los casos (0,1) y (1,0) deben dar 1 y los casos (0,0) y (1,1) deben dar
+0, y no existe ninguna recta que los separe (no es linealmente separable). En la
+prueba, el error total nunca bajó de 2 durante 100 épocas (osciló entre 2 y 4 y
+terminó en 4) y la neurona nunca llegó a 0. Es el problema del perceptrón simple
+que describieron Minsky y Papert en 1969, y se resuelve con más de una capa de
+neuronas (perceptrón multicapa).
+
+## Clase 8 aplicada: neurona para predecir riesgo de demora
 
 Script: `src/neurona_pqrs.py` (Python puro). Una neurona con función escalón
 aprende a predecir si un trámite tiene riesgo de demora alto (más de 8 días).
@@ -177,6 +232,7 @@ Entradas: radicados (normalizado), `es_queja` y `es_reclamo`.
 - [x] Cargar y limpiar datos de PQRS
 - [x] EDA con NumPy + Matplotlib
 - [x] Preparación de datos con Pandas y Seaborn
+- [x] Neuronas artificiales para compuertas lógicas (Clase 8)
 - [x] Neurona artificial en Python puro para riesgo de demora (Clase 8)
 - [x] Perceptrón desde cero con NumPy para demora alta (Avance 2)
 - [ ] Ampliar el dataset y separar datos de entrenamiento y prueba
